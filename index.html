@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Hello World Quiz</title>
+  <style>
+    body { font-family: sans-serif; padding: 2rem; max-width: 600px; margin: auto; }
+    .question { margin-bottom: 1.5rem; }
+    button { margin-top: 1rem; padding: 0.5rem 1rem; }
+  </style>
+</head>
+<body>
+  <h1>Hello World Quiz</h1>
+  <div id="quiz-container">
+    <div class="question" id="question-1">
+      <p>What's the traditional programming greeting?</p>
+      <button onclick="answer('correct')">Hello, World!</button>
+      <button onclick="answer('incorrect')">Hi there!</button>
+    </div>
+  </div>
+  <script>
+    function answer(choice) {
+      const container = document.getElementById("quiz-container");
+      if (choice === 'correct') {
+        container.innerHTML = "<p><strong>Correct!</strong> That’s the classic way!</p>";
+      } else {
+        container.innerHTML = "<p><strong>Oops!</strong> The classic answer is 'Hello, World!'</p>";
+      }
+    }
+  </script>
+</body>
+</html>
