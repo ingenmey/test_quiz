@@ -3,31 +3,176 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Hello World Quiz</title>
+  <title>Personality Object Quiz</title>
   <style>
-    body { font-family: sans-serif; padding: 2rem; max-width: 600px; margin: auto; }
-    .question { margin-bottom: 1.5rem; }
-    button { margin-top: 1rem; padding: 0.5rem 1rem; }
+    body { font-family: Arial, sans-serif; max-width: 700px; margin: auto; padding: 2rem; }
+    .question { margin-bottom: 2rem; }
+    button { display: block; margin: 0.5rem 0; padding: 0.5rem 1rem; }
+    #result { font-weight: bold; font-size: 1.5rem; margin-top: 2rem; }
   </style>
 </head>
 <body>
-  <h1>Hello World Quiz</h1>
-  <div id="quiz-container">
-    <div class="question" id="question-1">
-      <p>What's the traditional programming greeting?</p>
-      <button onclick="answer('correct')">Hello, World!</button>
-      <button onclick="answer('incorrect')">Hi there!</button>
-    </div>
-  </div>
+  <h1>What Random Object Are You?</h1>
+  <form id="quiz-form"></form>
+  <div id="result"></div>
+
   <script>
-    function answer(choice) {
-      const container = document.getElementById("quiz-container");
-      if (choice === 'correct') {
-        container.innerHTML = "<p><strong>Correct!</strong> That’s the classic way!</p>";
-      } else {
-        container.innerHTML = "<p><strong>Oops!</strong> The classic answer is 'Hello, World!'</p>";
+    const questions = [
+      "How do you usually spend a free weekend?",
+      "What’s your approach to solving problems?",
+      "In a group setting, you’re most likely to:",
+      "Which environment sounds most appealing to live in?",
+      "When picking a movie, you go for:",
+      "What motivates you most?",
+      "Your workspace is usually:",
+      "When under pressure, you tend to:",
+      "You feel most energized when:",
+      "What kind of travel appeals to you most?"
+    ];
+
+    const answers = [
+      ["A. Reading, gaming, or doing something solo", "B. Meeting a few close friends", "C. Exploring somewhere new or spontaneous", "D. Planning and completing a personal project"],
+      ["A. Think it through logically", "B. Talk it out", "C. Follow your gut", "D. Research and strategize"],
+      ["A. Observe and listen", "B. Crack jokes", "C. Lead the group", "D. Keep things on task"],
+      ["A. Quiet mountain cabin", "B. Lively city apartment", "C. Van on the road", "D. Suburban home"],
+      ["A. Drama or documentary", "B. Comedy or romance", "C. Action or adventure", "D. Mystery/thriller"],
+      ["A. Understanding things", "B. Connecting with people", "C. Freedom/flexibility", "D. Checking boxes"],
+      ["A. Messy but functional", "B. Decorated and comfy", "C. Anywhere I can work", "D. Organized and neat"],
+      ["A. Withdraw and think", "B. Vent/talk", "C. Power through", "D. Make a plan"],
+      ["A. Personal projects", "B. Social time", "C. Taking risks", "D. Finishing tasks"],
+      ["A. Solo quiet trip", "B. Group vacation", "C. Backpacking", "D. Guided tour"]
+    ];
+
+    const objects = {
+      1: "Toothpick", 2: "Telescope", 3: "Origami crane", 4: "Lighthouse", 5: "Time zone",
+      6: "Cactus", 7: "Marble statue", 8: "Rubik’s Cube", 9: "Cloud", 10: "Velcro strip",
+      11: "Comic book", 12: "Drone", 13: "Currency exchange rate", 14: "Sewing needle", 15: "Meteorite"
+    };
+
+// Answer mapping: question -> answer -> [{ objectId, score }]
+const answerMap = {
+  1: {
+    A: [{ id: 1, score: 0.7 }, { id: 8, score: 0.7 }],
+    B: [{ id: 11, score: 0.6 }, { id: 6, score: 0.6 }],
+    C: [{ id: 12, score: 0.8 }, { id: 9, score: 0.8 }],
+    D: [{ id: 14, score: 0.7 }, { id: 7, score: 0.7 }]
+  },
+  2: {
+    A: [{ id: 2, score: 0.8 }, { id: 5, score: 0.8 }],
+    B: [{ id: 11, score: 0.7 }, { id: 4, score: 0.7 }],
+    C: [{ id: 15, score: 0.6 }, { id: 9, score: 0.6 }],
+    D: [{ id: 8, score: 0.7 }, { id: 14, score: 0.7 }]
+  },
+  3: {
+    A: [{ id: 5, score: 0.6 }, { id: 3, score: 0.6 }],
+    B: [{ id: 11, score: 0.7 }, { id: 9, score: 0.7 }],
+    C: [{ id: 4, score: 0.8 }, { id: 12, score: 0.8 }],
+    D: [{ id: 14, score: 0.7 }, { id: 7, score: 0.7 }]
+  },
+  4: {
+    A: [{ id: 6, score: 0.7 }, { id: 2, score: 0.7 }],
+    B: [{ id: 11, score: 0.6 }, { id: 10, score: 0.6 }],
+    C: [{ id: 15, score: 0.8 }, { id: 12, score: 0.8 }],
+    D: [{ id: 7, score: 0.7 }, { id: 5, score: 0.7 }]
+  },
+  5: {
+    A: [{ id: 2, score: 0.8 }, { id: 7, score: 0.8 }],
+    B: [{ id: 11, score: 0.7 }, { id: 3, score: 0.7 }],
+    C: [{ id: 15, score: 0.7 }, { id: 12, score: 0.7 }],
+    D: [{ id: 8, score: 0.8 }, { id: 5, score: 0.8 }]
+  },
+  6: {
+    A: [{ id: 2, score: 0.8 }, { id: 3, score: 0.8 }],
+    B: [{ id: 11, score: 0.7 }, { id: 10, score: 0.7 }],
+    C: [{ id: 9, score: 0.7 }, { id: 12, score: 0.7 }],
+    D: [{ id: 14, score: 0.7 }, { id: 8, score: 0.7 }]
+  },
+  7: {
+    A: [{ id: 1, score: 0.6 }, { id: 9, score: 0.6 }],
+    B: [{ id: 3, score: 0.7 }, { id: 11, score: 0.7 }],
+    C: [{ id: 12, score: 0.7 }, { id: 10, score: 0.7 }],
+    D: [{ id: 7, score: 0.8 }, { id: 14, score: 0.8 }]
+  },
+  8: {
+    A: [{ id: 2, score: 0.8 }, { id: 5, score: 0.8 }],
+    B: [{ id: 11, score: 0.6 }, { id: 6, score: 0.6 }],
+    C: [{ id: 15, score: 0.7 }, { id: 9, score: 0.7 }],
+    D: [{ id: 8, score: 0.7 }, { id: 14, score: 0.7 }]
+  },
+  9: {
+    A: [{ id: 8, score: 0.7 }, { id: 3, score: 0.7 }],
+    B: [{ id: 11, score: 0.7 }, { id: 10, score: 0.7 }],
+    C: [{ id: 15, score: 0.8 }, { id: 12, score: 0.8 }],
+    D: [{ id: 7, score: 0.7 }, { id: 14, score: 0.7 }]
+  },
+ 10: {
+    A: [{ id: 6, score: 0.7 }, { id: 2, score: 0.7 }],
+    B: [{ id: 11, score: 0.7 }, { id: 9, score: 0.7 }],
+    C: [{ id: 12, score: 0.8 }, { id: 15, score: 0.8 }],
+    D: [{ id: 5, score: 0.7 }, { id: 7, score: 0.7 }]
+  }
+};
+
+    let scores = {};
+    Object.keys(objects).forEach(id => scores[id] = 0);
+
+    const form = document.getElementById("quiz-form");
+
+    // Render quiz
+    questions.forEach((q, i) => {
+      const container = document.createElement("div");
+      container.className = "question";
+      container.innerHTML = `<p><strong>Q${i + 1}:</strong> ${q}</p>`;
+
+      ["A", "B", "C", "D"].forEach((letter, idx) => {
+        const input = document.createElement("input");
+        input.type = "radio";
+        input.name = `q${i + 1}`;
+        input.value = letter;
+        input.id = `q${i + 1}-${letter}`;
+
+        const label = document.createElement("label");
+        label.htmlFor = input.id;
+        label.textContent = answers[i][idx];
+
+        container.appendChild(input);
+        container.appendChild(label);
+        container.appendChild(document.createElement("br"));
+      });
+
+      form.appendChild(container);
+    });
+
+    // Submit button
+    const submit = document.createElement("button");
+    submit.type = "button";
+    submit.textContent = "Get Result";
+    submit.onclick = () => {
+      scores = {}; Object.keys(objects).forEach(id => scores[id] = 0);
+
+      for (let i = 1; i <= 10; i++) {
+        const choice = document.querySelector(`input[name=q${i}]:checked`);
+        if (!choice) {
+          alert(`Please answer question ${i}`);
+          return;
+        }
+        const effects = answerMap[i][choice.value];
+        effects.forEach(({ id, score }) => scores[id] += score);
       }
-    }
+
+      // Get result
+      let topId = null, max = -Infinity;
+      for (const id in scores) {
+        if (scores[id] > max) {
+          max = scores[id];
+          topId = id;
+        }
+      }
+
+      document.getElementById("result").textContent = `Your personality object is: ${objects[topId]}`;
+    };
+
+    form.appendChild(submit);
   </script>
 </body>
 </html>
